@@ -1,0 +1,187 @@
+---
+title: "GEOG 3023: Statistics for Geography"
+subtitle: "Final Project: Grading a professor "
+author: Your NAME
+output: 
+  html_document:
+    css: "lab.css"
+
+
+Goal : score rating based on attractiveness, what did you use, what plots, why did you choose those, what analysis allowed you to make statesments that are in your discussion. Methods: How you found it? What did you find, what was interesting, why might this score impact, give a fun hypotheses at start (guess if it will affect), fun hypotheses for why it impacted. Hypotheses (which will we accept and reject). Show plots, anything that will back up findings. 
+
+Poster: .png
+export graph, click export above graph on the right onto poster
+
+references:
+- id: Hamermesh2005
+  title: Beauty in the Classroom - Instructors' Pulchritude and Putative Pedagogical Productivity
+  author:
+  - family: Hamermesh
+    given: Daniel S.
+  - family: Parker
+    given: Amy
+  volume: 24
+  URL: 'http://www.sciencedirect.com/science/article/pii/S0272775704001165'
+  DOI: 10.1016/j.econedurev.2004.07.013
+  publisher: Economics of Education Review
+  ISSN: 0272-7757
+  issue: 4
+  page: 369-376
+  type: article-journal
+  issued:
+    year: 2005
+    month: 8
+- id: Gelman2007
+  title: Data Analysis Using Regression and Multilevel/Hierarchical Models
+  author:
+  - family: Gelman
+    given: Andrew
+  - family: Hill
+    given: Jennifer
+  publisher: Cambridge University Press
+  city:
+  type: book
+  issued:
+    year: 2007
+  edition: 1
+  ISBN: 9780521686891
+---
+
+<div class="instructions">
+
+example:
+
+model = lm(score~bty_avg, data=evals)
+summary(model)
+plot(score~bty_avg, data=evals)
+**Logistics:**
+
+Please complete the following project and submit the finished Rmd and HTML
+file and a poster (a template is enclosed) about the project onto Canvas.
+
+You have two weeks to work on the project, please return by the first week
+of December (*December 1st* if you are in Wednesday lab, and *December 2nd*
+if you are in Thursday lab). 
+
+As mentioned in the class, you can work with
+If you work in group, in
+the poster and Rmd file, please clearly state which group member did which
+part of the project.
+
+
+
+
+**Requirements:**
+
+Since this is a final project, you can choose any methods we have discussed
+in the classes, but the methods to be used must include some of the
+following elements:
+
+- basic descriptive statistics (e.g., `cor()`, `mean()`, `sd()`)
+
+
+- statistical plots (e.g., `hist()`, `boxplot()`, `qqplot()`, `scatterplot()`)
+
+
+- hypothesis testing (e.g., `t.test()`, `wilcox.test()`, `ks.test()`) or confidence interval
+
+
+- regression modeling (e.g., `lm()`) or AVOVA (e.g., `aov()`, `anova()`).
+
+You must provide interpretations of the analysis results, and present your
+results in the format of a poster (a template is enclosed). The post should
+include the following four sections:
+
+- Introduction
+- Methods
+- Results
+- Discussion
+
+
+**What to submit:**
+
+- Rmd file
+- Knitted html file
+- Poster as described above
+
+Lastly, don't forget to change name field in the beginning to your **first and last name**. 
+
+If there is anything not clear, please contact Guofeng or Kylen. 
+
+This project is modified based on [OpenIntro](https://www.openintro.org/stat/labs.php) lab.
+
+</div>
+
+## Grading a professor
+
+Many college courses conclude by giving students the opportunity to
+evaluate the course and the instructor anonymously. However, the use of
+these student evaluations as an indicator of course quality and teaching
+effectiveness is often criticized because these measures may reflect the
+influence of non-teaching related characteristics, such as the physical
+appearance of the instructor, rank, age and ethnicity. Foe example, the
+article titled, "Beauty in the classroom: instructors' pulchritude and
+putative pedagogical productivity" [@Hamermesh2005] found that instructors
+who are viewed to be better looking receive higher instructional ratings.
+
+The main idea of the project is to use the statistical methods we learned
+in the class to help find what factors can go into a positive professor
+evaluation.
+
+### The data
+
+The data were gathered from end of semester student evaluations for a large 
+sample of professors from the University of Texas at Austin. In addition, six 
+students rated the professors' physical appearance. (This is a based on the
+original data set that was released as part of the replication 
+data for *Data Analysis Using Regression and Multilevel/Hierarchical Models* 
+[@Gelman2007].) The result is a data frame where each row contains a 
+different course and columns represent variables about the courses and 
+professors.
+
+# exporting script ->        png('model.png'), would probably go in project file
+
+Let's load the data:
+
+```{r load-data, message=FALSE}
+evals<-read.csv('evals.csv')
+```
+
+variable         | description
+---------------- | -----------
+`score`          | average professor evaluation score: (1) very unsatisfactory - (5) excellent.
+`rank`           | rank of professor: teaching, tenure track, tenured.
+`ethnicity`      | ethnicity of professor: not minority, minority.
+`gender`         | gender of professor: female, male.
+`language`       | language of school where professor received education: english or non-english.
+`age`            | age of professor.
+`cls_perc_eval`  | percent of students in class who completed evaluation.
+`cls_did_eval`   | number of students in class who completed evaluation.
+`cls_students`   | total number of students in class.
+`cls_level`      | class level: lower, upper.
+`cls_profs`      | number of professors teaching sections in course in sample: single, multiple.
+`cls_credits`    | number of credits of class: one credit (lab, PE, etc.), multi credit.
+`bty_f1lower`    | beauty rating of professor from lower level female: (1) lowest - (10) highest.
+`bty_f1upper`    | beauty rating of professor from upper level female: (1) lowest - (10) highest.
+`bty_f2upper`    | beauty rating of professor from second upper level female: (1) lowest - (10) highest.
+`bty_m1lower`    | beauty rating of professor from lower level male: (1) lowest - (10) highest.
+`bty_m1upper`    | beauty rating of professor from upper level male: (1) lowest - (10) highest.
+`bty_m2upper`    | beauty rating of professor from second upper level male: (1) lowest - (10) highest.
+`bty_avg`        | average beauty rating of professor.
+`pic_outfit`     | outfit of professor in picture: not formal, formal.
+`pic_color`      | color of professor's picture: color, black & white.
+
+
+### Load packages
+
+As usual, load the packages that might be needed for the project. 
+
+```{r load-packages, message=FALSE}
+library(dplyr)
+```
+
+### Now start to work on the project
+
+
+
+## References
